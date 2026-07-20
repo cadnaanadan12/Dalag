@@ -1,127 +1,163 @@
-// ui/screens/SplashScreen.kt
-package com.example.dalag.ui.screens
+// screens/splash_screen.dart
+import 'package:flutter/material.dart';
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.*
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Agriculture
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
-@Composable
-fun SplashScreen(onNavigateToLogin: () -> Unit) {
-var visible by remember { mutableStateOf(false) }
-
-LaunchedEffect(Unit) {
-visible = true
-delay(2500)
-onNavigateToLogin()
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-Box(
-modifier = Modifier
-    .fillMaxSize()
-    .background(
-Brush.linearGradient(
-colors = listOf(
-Color(0xFF0B3D2E),
-Color(0xFF0B3D2A),
-Color(0xFF0B3D2A),
-Color(0xFF0B3D2A)
-)
-)
-),
-contentAlignment = Alignment.Center
-) {
-AnimatedVisibility(
-visible = visible,
-enter = fadeIn(animationSpec = tween(1200)) + scaleIn(
-initialScale = 0.8f,
-animationSpec = tween(1200, easing = BackEaseOut)
-)
-) {
-Column(
-horizontalAlignment = Alignment.CenterHorizontally,
-modifier = Modifier.padding(horizontal = 32.dp)
-) {
-// Logo
-Box(
-modifier = Modifier
-    .size(120.dp)
-    .shadow(40.dp, CircleShape, spotColor = Color.Black.copy(alpha = 0.2f))
-    .background(Color.Black.copy(alpha = 0.15f), CircleShape),
-contentAlignment = Alignment.Center
-) {
-Icon(
-imageVector = Icons.Default.Agriculture,
-contentDescription = "Logo",
-modifier = Modifier.size(64.dp),
-tint = Color.White
-)
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _controller.forward();
+
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1B5E20),
+              Color(0xFF2E7D32),
+              Color(0xFF388E3C),
+              Color(0xFF4CAF50),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.agriculture,
+                        size: 64,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Dalag',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 20,
+                            color: Colors.black26,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Text(
+                        'Market Prices at Your Fingertips',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    const Text(
+                      'POWERED BY DALAG INTELLIGENCE',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(
+                        valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.white),
+                        strokeWidth: 3,
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
-
-Spacer(modifier = Modifier.height(32.dp))
-
-Text(
-text = "Dalag",
-fontSize = 48.sp,
-fontWeight = FontWeight.Bold,
-color = Color.White,
-letterSpacing = 2.sp
-)
-
-Spacer(modifier = Modifier.height(8.dp))
-
-Surface(
-color = Color.Black.copy(alpha = 0.15f),
-shape = RoundedCornerShape(30.dp),
-border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.2f))
-) {
-Text(
-text = "Real-Time Market Prices for Farmers",
-modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-color = Color.Gray,
-fontWeight = FontWeight.Bold,
-fontSize = 16.sp
-)
-}
-
-Spacer(modifier = Modifier.height(48.dp))
-
-Text(
-text = "POWERED BY DALAG INTELLIGENCE",
-fontSize = 12.sp,
-color = Color.Black.copy(alpha = 0.7f),
-fontWeight = FontWeight.Bold,
-letterSpacing = 2.sp
-)
-
-Spacer(modifier = Modifier.height(16.dp))
-
-CircularProgressIndicator(
-color = Color.White,
-strokeWidth = 3.dp,
-modifier = Modifier.size(40.dp)
-)
-}
-}
-}
-}
-
-private val BackEaseOut = CubicBezierEasing(0.175f, 0.885f, 0.32f, 1.275f)
