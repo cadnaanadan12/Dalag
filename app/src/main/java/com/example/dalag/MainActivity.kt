@@ -153,7 +153,7 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
                     Text(
                         text = "Real-Time Market Prices for Farmers",
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                        color = Color.Black,
+                        color = Color.Gray,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
