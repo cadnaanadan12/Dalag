@@ -1,16 +1,15 @@
-// ui/screens/LoginScreen.kt
+// ui/screens/RegisterScreen.kt
 package com.example.dalag.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Phone
@@ -32,16 +31,18 @@ import androidx.compose.ui.unit.sp
 import com.example.dalag.ui.viewmodel.UserViewModel
 
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     userViewModel: UserViewModel,
-    onLoginSuccess: (String) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onRegisterSuccess: (String) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
-    var userName by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var rememberMe by remember { mutableStateOf(true) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -66,10 +67,15 @@ fun LoginScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 28.dp, vertical = 24.dp)
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Header
+                // Back button and header
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onNavigateToLogin,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .background(Color(0xFF2E7D32).copy(alpha = 0.1f), RoundedCornerShape(14.dp))
@@ -92,20 +98,18 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "Welcome Back",
+                    text = "Create Account",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1B5E20),
                     letterSpacing = (-0.5).sp
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
-                    text = "Access your agricultural market intelligence dashboard",
+                    text = "Join Dalag and access real-time market intelligence",
                     fontSize = 16.sp,
                     color = Color.Gray,
                     lineHeight = 24.sp
@@ -113,19 +117,19 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // User Name Field
-                LoginTextField(
-                    value = userName,
-                    onValueChange = { userName = it },
-                    label = "User Name",
-                    placeholder = "Enter your name",
+                // Full Name
+                RegisterTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = "Full Name",
+                    placeholder = "Enter your full name",
                     leadingIcon = Icons.Default.Person,
                     keyboardType = KeyboardType.Text
                 )
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // Phone field
-                LoginTextField(
+                // Phone Number
+                RegisterTextField(
                     value = phone,
                     onValueChange = { phone = it },
                     label = "Phone Number",
@@ -133,58 +137,53 @@ fun LoginScreen(
                     leadingIcon = Icons.Outlined.Phone,
                     keyboardType = KeyboardType.Phone
                 )
-
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // Password field
-                LoginTextField(
+                // Email
+                RegisterTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = "Email Address",
+                    placeholder = "you@example.com",
+                    leadingIcon = Icons.Default.Email,
+                    keyboardType = KeyboardType.Email
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Password
+                RegisterTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = "Password",
+                    placeholder = "Create a strong password",
                     leadingIcon = Icons.Outlined.Lock,
                     isPassword = true,
                     passwordVisible = passwordVisible,
                     onPasswordToggle = { passwordVisible = !passwordVisible }
                 )
+                Spacer(modifier = Modifier.height(18.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Forgot Password
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    Text(
-                        text = "Forgot Password?",
-                        color = Color(0xFF2E7D32),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        modifier = Modifier.clickable { /* Handle forgot password */ }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Remember me
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF2E7D32))
-                    )
-                    Text(
-                        text = "Stay signed in for 30 days",
-                        fontSize = 14.sp,
-                        color = Color.DarkGray,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                // Confirm Password
+                RegisterTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = "Confirm Password",
+                    placeholder = "Re-enter your password",
+                    leadingIcon = Icons.Outlined.Lock,
+                    isPassword = true,
+                    passwordVisible = confirmPasswordVisible,
+                    onPasswordToggle = { confirmPasswordVisible = !confirmPasswordVisible }
+                )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // Login Button
+                // Register Button
                 Button(
                     onClick = {
-                        if (userName.isNotBlank()) {
-                            userViewModel.setUserName(userName)
-                            onLoginSuccess(userName)
+                        // Farsamooyinka diiwaan-gelinta (validation)
+                        if (fullName.isNotBlank() && password == confirmPassword) {
+                            userViewModel.setUserName(fullName)
+                            onRegisterSuccess(fullName)
                         }
                     },
                     modifier = Modifier
@@ -196,53 +195,28 @@ fun LoginScreen(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Login",
+                            text = "Create Account",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.SemiBold,
                             letterSpacing = 0.5.sp
                         )
                         Spacer(modifier = Modifier.width(10.dp))
-                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.PersonAdd, contentDescription = null, modifier = Modifier.size(20.dp))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // Divider
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                    Text(
-                        text = "OR CONTINUE WITH",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 1.sp
-                    )
-                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Social Buttons
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    SocialButton(icon = Icons.Default.GTranslate, label = "Google", modifier = Modifier.weight(1f)) { /* Google login */ }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    SocialButton(icon = Icons.Default.PhoneIphone, label = "Apple", modifier = Modifier.weight(1f)) { /* Apple login */ }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Create account
+                // Already have account
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "New to Dalag?", fontSize = 15.sp, color = Color.Gray)
-                    TextButton(onClick = onNavigateToRegister) {
+                    Text(text = "Already have an account?", fontSize = 15.sp, color = Color.Gray)
+                    TextButton(onClick = onNavigateToLogin) {
                         Text(
-                            text = "Create an Account",
+                            text = "Login",
                             color = Color(0xFF2E7D32),
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
@@ -253,7 +227,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // Footer
+                // Footer (optional)
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -288,7 +262,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginTextField(
+fun RegisterTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -336,39 +310,5 @@ fun LoginTextField(
             ),
             singleLine = true
         )
-    }
-}
-
-@Composable
-fun SocialButton(
-    icon: ImageVector,
-    label: String,
-    modifier: Modifier = Modifier,
-    onTap: () -> Unit
-) {
-    Surface(
-        modifier = modifier
-            .clickable { onTap() }
-            .shadow(2.dp, RoundedCornerShape(14.dp), spotColor = Color.Black.copy(alpha = 0.02f)),
-        shape = RoundedCornerShape(14.dp),
-        color = Color.White,
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFEEEEEE))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 14.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = label,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.DarkGray
-            )
-        }
     }
 }

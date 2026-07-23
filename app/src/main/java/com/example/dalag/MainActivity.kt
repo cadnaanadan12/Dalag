@@ -1,30 +1,40 @@
+// MainActivity.kt
 package com.example.dalag
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.dalag.ui.screens.LoginScreen
-import com.example.dalag.ui.screens.SplashScreen
-import com.example.dalag.ui.theme.DalagTheme
+import androidx.navigation.navArgument
+import com.example.dalag.ui.screens.*
+import com.example.dalag.ui.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DalagTheme {
+            MaterialTheme(
+                colorScheme = lightColorScheme(
+                    primary = Color(0xFF2E7D32),
+                    secondary = Color(0xFF8D9632),
+                    surface = Color(0xFF090D11)
+                )
+            ) {
                 DalagApp()
             }
         }
@@ -34,44 +44,56 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DalagApp() {
     val navController = rememberNavController()
+    val userViewModel: UserViewModel = viewModel()
+
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
-            SplashScreen {
-                navController.navigate("login") {
-                    popUpTo("splash") { inclusive = true }
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("splash") { inclusive = true }
+                    }
                 }
-            }
+            )
         }
         composable("login") {
             LoginScreen(
-                onNavigateToRegister = { navController.navigate("register") },
-            ) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
+                userViewModel = userViewModel,
+                onLoginSuccess = { userName ->
+                    // U gudub home oo wadata magaca
+                    navController.navigate("home/$userName") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate("register")
                 }
-            }
+            )
         }
         composable("register") {
-            // Placeholder for Registration Screen
-            Scaffold { padding ->
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Registration Screen Placeholder")
+            RegisterScreen(
+                userViewModel = userViewModel,
+                onRegisterSuccess = { userName ->
+                    navController.navigate("home/$userName") {
+                        popUpTo("register") { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
                 }
-            }
+            )
         }
-        composable("home") {
-            // Placeholder for Home/Main Screen
-            Scaffold { padding ->
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Home Screen Placeholder")
-                }
-            }
+        composable(
+            route = "home/{userName}",
+            arguments = listOf(navArgument("userName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userName = backStackEntry.arguments?.getString("userName") ?: "User"
+            // Ku kaydi ViewModel-ka si looga helo screens-ka kale
+            userViewModel.setUserName(userName)
+            MainTabScreen(
+                navController = navController,
+                userViewModel = userViewModel
+            )
         }
     }
 }

@@ -1,10 +1,10 @@
 package com.example.dalag.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -24,12 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
-private val BackEaseOut = CubicBezierEasing(0.175f, 0.885f, 0.32f, 1.275f)
-
 @Composable
 fun SplashScreen(onNavigateToLogin: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         visible = true
         delay(2500)
@@ -43,9 +41,9 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
                 Brush.linearGradient(
                     colors = listOf(
                         Color(0xFF0B3D2E),
-                        Color(0xFF0B3D2E),
-                        Color(0xFF0B3D2E),
-                        Color(0xFF0B3D2E)
+                        Color(0xFF0B3D2A),
+                        Color(0xFF0B3D2A),
+                        Color(0xFF0B3D2A)
                     )
                 )
             ),
@@ -67,7 +65,13 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
                     modifier = Modifier
                         .size(120.dp)
                         .shadow(40.dp, CircleShape, spotColor = Color.Black.copy(alpha = 0.2f))
-                        .background(Color.Black.copy(alpha = 0.15f), CircleShape),
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(Color(0xFF388E3C), Color(0xFF1B5E20))
+                            ),
+                            CircleShape
+                        )
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -77,9 +81,9 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
                         tint = Color.White
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 Text(
                     text = "Dalag",
                     fontSize = 48.sp,
@@ -87,35 +91,35 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
                     color = Color.White,
                     letterSpacing = 2.sp
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Surface(
                     color = Color.Black.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(30.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.Black.copy(alpha = 0.2f))
+                    border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.2f))
                 ) {
                     Text(
                         text = "Real-Time Market Prices for Farmers",
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                        color = Color.White.copy(alpha = 0.9f),
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray,
                         fontSize = 16.sp
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(48.dp))
-                
+
                 Text(
                     text = "POWERED BY DALAG INTELLIGENCE",
                     fontSize = 12.sp,
-                    color = Color.Black.copy(alpha = 0.7f),
+                    color = Color.White.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 CircularProgressIndicator(
                     color = Color.White,
                     strokeWidth = 3.dp,
@@ -125,3 +129,5 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
         }
     }
 }
+
+private val BackEaseOut = CubicBezierEasing(0.175f, 0.885f, 0.32f, 1.275f)
